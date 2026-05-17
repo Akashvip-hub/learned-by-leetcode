@@ -1,0 +1,21 @@
+from collections import deque
+class Solution(object):
+    def canReach(self, arr, start):
+        queue = deque([start])
+        
+        while queue:
+            curr = queue.popleft()
+            if arr[curr] == 0:
+                return True
+            if arr[curr] < 0:
+                continue
+            left_jump = curr - arr[curr]
+            right_jump = curr + arr[curr]
+            
+            arr[curr] = -arr[curr]
+            if left_jump >= 0 and arr[left_jump] >= 0:
+                queue.append(left_jump)
+            if right_jump < len(arr) and arr[right_jump] >= 0:
+                queue.append(right_jump)
+                
+        return False
