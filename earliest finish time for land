@@ -1,0 +1,22 @@
+class Solution(object):
+    def earliestFinishTime(self, landStartTime, landDuration, waterStartTime, waterDuration):
+        def get_min_finish(start1, dur1, start2, dur2):
+           
+            best_f1 = float('inf')
+            for s, d in zip(start1, dur1):
+                best_f1 = min(best_f1, s + d)
+            best_total = float('inf')
+            for s, d in zip(start2, dur2):
+                if s <= best_f1:
+                    best_total = min(best_total, best_f1 + d)
+                else:
+
+                    best_total = min(best_total, s + d)
+            
+            return best_total
+
+        ans1 = get_min_finish(landStartTime, landDuration, waterStartTime, waterDuration)
+        ans2 = get_min_finish(waterStartTime, waterDuration, landStartTime, landDuration)
+        
+        return min(ans1, ans2)
+        
