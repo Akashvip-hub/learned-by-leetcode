@@ -9,5 +9,4 @@ class Solution(object):
                 total_initial_needed += (minimum - current_energy)
                 current_energy = minimum
             current_energy -= actual
-            
         return total_initial_needed
