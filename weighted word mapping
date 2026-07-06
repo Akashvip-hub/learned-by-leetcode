@@ -1,0 +1,12 @@
+class Solution(object):
+    def mapWordWeights(self, words, weights):
+        result = []
+        
+        for word in words:
+            word_weight = sum(weights[ord(c) - ord('a')] for c in word)
+            remainder = word_weight % 26
+            mapped_char = chr(ord('z') - remainder)
+            
+            result.append(mapped_char)
+            
+        return "".join(result)
