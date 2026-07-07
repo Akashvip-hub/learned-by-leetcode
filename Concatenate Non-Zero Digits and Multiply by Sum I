@@ -1,0 +1,25 @@
+lass Solution(object):
+    def sumAndMultiply(self, n):
+        if n == 0:
+            return 0
+        
+        reversed_x = 0
+        digit_sum = 0
+        count_digits = 0
+        while n > 0:
+            digit = n % 10
+            if digit != 0:
+                reversed_x = reversed_x * 10 + digit
+                digit_sum += digit
+                count_digits += 1
+            n //= 10
+            
+        if count_digits == 0:
+            return 0
+            
+        x = 0
+        while reversed_x > 0:
+            x = x * 10 + (reversed_x % 10)
+            reversed_x //= 10
+            
+        return x * digit_sum
