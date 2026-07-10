@@ -1,0 +1,56 @@
+class Solution(object):
+    def pathExistenceQueries(self, n, nums, maxDiff, queries):
+        sorted_indices = sorted(range(n), key=lambda x: nums[x])
+        sorted_vals = [nums[i] for i in sorted_indices]
+        
+        pos_in_sorted = {idx: i for i, idx in enumerate(sorted_indices)}
+        
+        nxt = [i for i in range(n)]
+        r = 0
+        for l in range(n):
+            while r < n and sorted_vals[r] - sorted_vals[l] <= maxDiff:
+                r += 1
+            nxt[l] = r - 1
+            
+        LOG = 18 
+        up = [[0] * LOG for _ in range(n)]
+        
+        for i in range(n):
+            up[i][0] = nxt[i]
+            
+        for j in range(1, LOG):
+            for i in range(n):
+                up[i][j] = up[up[i][j - 1]][j - 1]
+                
+        ans = []
+        
+        for u, v in queries:
+            if u == v:
+                ans.append(0)
+                continue
+                
+            p1 = pos_in_sorted[u]
+            p2 = pos_in_sorted[v]
+            
+            if p1 > p2:
+                p1, p2 = p2, p1
+                
+            if sorted_vals[p2] - sorted_vals[p1] <= maxDiff:
+                ans.append(1)
+                continue
+                
+            steps = 0
+            curr = p1
+            for j in range(LOG - 1, -1, -1):
+                if sorted_vals[up[curr][j]] < sorted_vals[p2]:
+                    curr = up[curr][j]
+                    steps += (1 << j)
+            curr = up[curr][0]
+            steps += 1
+            
+            if sorted_vals[curr] >= sorted_vals[p2] and up[p1][LOG - 1] >= p2:
+                ans.append(steps)
+            else:
+                ans.append(-1)
+                
+        return ans
