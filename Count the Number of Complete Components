@@ -1,0 +1,39 @@
+class Solution(object):
+    def countCompleteComponents(self, n, edges):
+        adj = [[] for _ in range(n)]
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
+            
+        visited = [False] * n
+        complete_components = 0
+        
+        for i in range(n):
+            if not visited[i]:
+                queue = [i]
+                visited[i] = True
+                
+                component_vertices = []
+                
+                head = 0
+                while head < len(queue):
+                    curr = queue[head]
+                    component_vertices.append(curr)
+                    head += 1
+                    
+                    for neighbor in adj[curr]:
+                        if not visited[neighbor]:
+                            visited[neighbor] = True
+                            queue.append(neighbor)
+                
+                v_count = len(component_vertices)
+                e_count = 0
+                for node in component_vertices:
+                    e_count += len(adj[node])
+                
+                e_count //= 2
+                if e_count == (v_count * (v_count - 1)) // 2:
+                    complete_components += 1
+                    
+        return complete_components
+        
