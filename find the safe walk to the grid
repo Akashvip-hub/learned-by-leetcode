@@ -1,13 +1,9 @@
 from collections import deque
 class Solution(object):
     def findSafeWalk(self, grid, health):
-        
         m, n = len(grid), len(grid[0])
-        
         cost = [[float('inf')] * n for _ in range(m)]
-        
         queue = deque()
-        
         start_loss = grid[0][0]
         cost[0][0] = start_loss
         queue.append((0, 0))
@@ -16,7 +12,6 @@ class Solution(object):
         
         while queue:
             r, c = queue.popleft()
-            
             if r == m - 1 and c == n - 1:
                 break
                 
@@ -32,7 +27,4 @@ class Solution(object):
                             queue.appendleft((nr, nc))
                         else:
                             queue.append((nr, nc))
-         
         return health - cost[m-1][n-1] >= 1
-        
-        
