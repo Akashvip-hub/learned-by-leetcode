@@ -2,7 +2,7 @@ from collections import deque
 class Solution(object):
     def canReach(self, arr, start):
         queue = deque([start])
-        
+
         while queue:
             curr = queue.popleft()
             if arr[curr] == 0:
@@ -16,6 +16,5 @@ class Solution(object):
             if left_jump >= 0 and arr[left_jump] >= 0:
                 queue.append(left_jump)
             if right_jump < len(arr) and arr[right_jump] >= 0:
-                queue.append(right_jump)
-                
+                queue.append(right_jump) 
         return False
