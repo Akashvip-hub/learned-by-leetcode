@@ -17,8 +17,7 @@ class Solution(object):
             for v, _ in adj[u]:
                 in_degree[v] -= 1
                 if in_degree[v] == 0:
-                    queue.append(v)
-                    
+                    queue.append(v)          
         def check(mid):
             dp = [float('inf')] * n
             dp[0] = 0
@@ -33,7 +32,6 @@ class Solution(object):
                             dp[v] = dp[u] + cost
             
             return dp[n - 1] <= k
-
         low = 0
         high = max([cost for _, _, cost in edges]) if edges else 0
         ans = -1
@@ -45,6 +43,4 @@ class Solution(object):
                 low = mid + 1
             else:
                 high = mid - 1  
-                
         return ans
-        
