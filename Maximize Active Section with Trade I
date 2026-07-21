@@ -1,0 +1,13 @@
+class Solution(object):
+    def maxActiveSectionsAfterTrade(self, s):
+        total_ones = s.count('1')
+        zero_blocks = [len(block) for block in s.split('1') if block]
+
+        if len(zero_blocks) < 2:
+            return total_ones
+            
+        max_delta = 0
+        for i in range(len(zero_blocks) - 1):
+            max_delta = max(max_delta, zero_blocks[i] + zero_blocks[i + 1])
+            
+        return total_ones + max_delta
