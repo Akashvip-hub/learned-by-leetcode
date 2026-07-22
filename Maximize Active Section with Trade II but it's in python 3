@@ -1,0 +1,105 @@
+from typing import List
+import bisect
+
+class Solution:
+    def maxActiveSectionsAfterTrade(self, s: str, queries: List[List[int]]) -> List[int]:
+        n = len(s)
+        total_ones = s.count('1')
+        
+        # 1. Parse string into contiguous blocks of '0's and '1's
+        segments = []
+        i = 0
+        while i < n:
+            start = i
+            c = s[i]
+            while i < n and s[i] == c:
+                i += 1
+            segments.append((c, start, i - 1))
+            
+        num_segs = len(segments)
+        
+        # 2. Collect indices of '1'-segments surrounded by '0'-segments
+        one_indices = []
+        for idx in range(1, num_segs - 1):
+            if segments[idx][0] == '1':
+                one_indices.append(idx)
+                
+        num_ones_segs = len(one_indices)
+        if num_ones_segs == 0:
+            return [total_ones] * len(queries)
+            
+        # 3. Precompute unclipped gains for each candidate '1'-segment
+        gains = []
+        for idx in one_indices:
+            left_len = segments[idx - 1][2] - segments[idx - 1][1] + 1
+            right_len = segments[idx + 1][2] - segments[idx + 1][1] + 1
+            gains.append(left_len + right_len)
+            
+        # 4. Build Sparse Table over precomputed gains for O(1) range max queries
+        m = len(gains)
+        max_log = m.bit_length()
+        st = [[0] * m for _ in range(max_log)]
+        st[0] = gains[:]
+        
+        for j in range(1, max_log):
+            length = 1 << (j - 1)
+            for k in range(m - (1 << j) + 1):
+                st[j][k] = max(st[j - 1][k], st[j - 1][k + length])
+                
+        def query_st(L: int, R: int) -> int:
+            if L > R:
+                return 0
+            length = R - L + 1
+            j = length.bit_length() - 1
+            return max(st[j][L], st[j][R - (1 << j) + 1])
+            
+        # Helper to compute exact gain for boundary '1'-segment clipped to [l, r]
+        def calc_gain(seg_idx: int, l: int, r: int) -> int:
+            _, s_one, e_one = segments[seg_idx]
+            if s_one <= l or e_one >= r:
+                return 0
+                
+            # Left '0'-segment clipped to l
+            _, s_left, e_left = segments[seg_idx - 1]
+            eff_left = max(0, e_left - max(s_left, l) + 1)
+            
+            # Right '0'-segment clipped to r
+            _, s_right, e_right = segments[seg_idx + 1]
+            eff_right = max(0, min(e_right, r) - s_right + 1)
+            
+            return eff_left + eff_right
+
+        one_starts = [segments[idx][1] for idx in one_indices]
+        
+        # 5. Process queries
+        ans = []
+        for l, r in queries:
+            # Find candidate '1'-segments strictly inside (l, r)
+            first_pos = bisect.bisect_right(one_starts, l)
+            last_pos = bisect.bisect_left(one_starts, r) - 1
+            
+            # Refine last_pos to ensure end position < r
+            while last_pos >= first_pos and segments[one_indices[last_pos]][2] >= r:
+                last_pos -= 1
+                
+            if first_pos > last_pos:
+                ans.append(total_ones)
+                continue
+                
+            max_gain = 0
+            
+            # Boundary 1: Check first valid '1'-segment
+            max_gain = max(max_gain, calc_gain(one_indices[first_pos], l, r))
+            
+            # Boundary 2: Check last valid '1'-segment
+            if last_pos > first_pos:
+                max_gain = max(max_gain, calc_gain(one_indices[last_pos], l, r))
+                
+            # Interior: Query Sparse Table for unclipped '1'-segments
+            if first_pos + 1 <= last_pos - 1:
+                max_gain = max(max_gain, query_st(first_pos + 1, last_pos - 1))
+                
+            ans.append(total_ones + max_gain)
+            
+        return ans
+        
