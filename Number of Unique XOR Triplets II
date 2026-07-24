@@ -1,0 +1,15 @@
+class Solution(object):
+    def uniqueXorTriplets(self, nums):
+        unique_nums = list(set(nums))
+        pair_xors = set()
+        n = len(unique_nums)
+        for i in range(n):
+            for j in range(i, n):
+                pair_xors.add(unique_nums[i] ^ unique_nums[j])
+        
+        triplet_xors = set()
+        for px in pair_xors:
+            for num in unique_nums:
+                triplet_xors.add(px ^ num)
+                
+        return len(triplet_xors)
