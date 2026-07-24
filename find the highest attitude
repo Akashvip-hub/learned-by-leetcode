@@ -6,5 +6,4 @@ class Solution(object):
             current_altitude += g
             if current_altitude > max_altitude:
                 max_altitude = current_altitude
-                
         return max_altitude
