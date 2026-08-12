@@ -1,0 +1,26 @@
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var maxSubarrayLength = function(nums, k) {
+    const frequency = new Map();
+    let left = 0;
+    let longest = 0;
+
+    for (let right = 0; right < nums.length; right++) {
+        const val = nums[right];
+        frequency.set(val, (frequency.get(val) || 0) + 1);
+
+        // Shrink the window if frequency exceeds k
+        while (frequency.get(val) > k) {
+            const leftVal = nums[left];
+            frequency.set(leftVal, frequency.get(leftVal) - 1);
+            left++;
+        }
+
+        longest = Math.max(longest, right - left + 1);
+    }
+
+    return longest;
+};
